@@ -1,0 +1,10 @@
+# .github/metadata.yaml
+description: "Terminal Input parser surface — Key/Mouse events + CSI / Kitty / UTF-8 / Mouse / Control parser variants over Terminal_Primitives_Core + swift-input-primitives + swift-ascii-primitives."
+topics:
+  - primitives
+  - terminal
+  - input
+  - parser
+homepage: "https://swift-institute.org"
+readme:
+  family: E
