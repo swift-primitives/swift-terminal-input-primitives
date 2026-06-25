@@ -9,11 +9,11 @@
 //
 // ===----------------------------------------------------------------------===//
 
-/// A terminal input event.
-///
-/// Represents a single parsed input event from the terminal. Events are
-/// produced by ``Terminal.Input.Parser`` from raw byte sequences.
 extension Terminal.Input {
+    /// A terminal input event.
+    ///
+    /// Represents a single parsed input event from the terminal. Events are
+    /// produced by ``Terminal.Input.Parser`` from raw byte sequences.
     public enum Event: Sendable, Equatable {
         /// A keyboard event.
         case key(Key)

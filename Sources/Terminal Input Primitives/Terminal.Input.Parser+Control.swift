@@ -55,15 +55,7 @@ extension Terminal.Input.Parser {
         default:
             // Arithmetic-domain bridge: control byte → printable Ctrl-letter via offset.
             // Byte has no arithmetic by design ([API-BYTE-002]); bridge via .underlying.
-            if code <= .sub {
-                // 0x01–0x1A → Ctrl+a through Ctrl+z (lowercase)
-                return .key(
-                    Terminal.Input.Key(
-                        code: .character(Unicode.Scalar(byte.underlying &+ 0x60)),
-                        modifiers: .control
-                    )
-                )
-            } else {
+            guard code <= .sub else {
                 // 0x1C–0x1F → Ctrl+\ through Ctrl+_
                 return .key(
                     Terminal.Input.Key(
@@ -72,6 +64,13 @@ extension Terminal.Input.Parser {
                     )
                 )
             }
+            // 0x01–0x1A → Ctrl+a through Ctrl+z (lowercase)
+            return .key(
+                Terminal.Input.Key(
+                    code: .character(Unicode.Scalar(byte.underlying &+ 0x60)),
+                    modifiers: .control
+                )
+            )
         }
     }
 }

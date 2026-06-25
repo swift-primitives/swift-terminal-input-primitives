@@ -22,15 +22,15 @@ let package = Package(
         ),
     ],
     dependencies: [
-        .package(path: "../swift-terminal-primitives"),
-        .package(path: "../swift-input-primitives"),
-        .package(path: "../swift-ascii-primitives"),
+        .package(url: "https://github.com/swift-primitives/swift-terminal-primitives.git", branch: "main"),
+        .package(url: "https://github.com/swift-primitives/swift-input-primitives.git", branch: "main"),
+        .package(url: "https://github.com/swift-primitives/swift-ascii-primitives.git", branch: "main"),
     ],
     targets: [
         .target(
             name: "Terminal Input Primitives",
             dependencies: [
-                .product(name: "Terminal Primitives Core", package: "swift-terminal-primitives"),
+                .product(name: "Terminal Primitives", package: "swift-terminal-primitives"),
                 .product(name: "Input Primitives", package: "swift-input-primitives"),
                 .product(name: "ASCII Primitives", package: "swift-ascii-primitives"),
             ]

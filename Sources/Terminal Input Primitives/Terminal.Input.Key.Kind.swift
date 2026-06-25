@@ -9,11 +9,11 @@
 //
 // ===----------------------------------------------------------------------===//
 
-/// The kind of key event.
-///
-/// Only meaningful when the Kitty keyboard protocol is active.
-/// Standard VT sequences do not distinguish press from repeat.
 extension Terminal.Input.Key {
+    /// The kind of key event.
+    ///
+    /// Only meaningful when the Kitty keyboard protocol is active.
+    /// Standard VT sequences do not distinguish press from repeat.
     public enum Kind: Sendable, Equatable {
         /// Initial key press.
         case press

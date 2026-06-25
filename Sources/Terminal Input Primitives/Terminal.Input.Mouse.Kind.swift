@@ -9,8 +9,8 @@
 //
 // ===----------------------------------------------------------------------===//
 
-/// The kind of mouse event.
 extension Terminal.Input.Mouse {
+    /// The kind of mouse event.
     public enum Kind: Sendable, Equatable {
         /// A button was pressed.
         case press(Button)

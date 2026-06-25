@@ -9,11 +9,11 @@
 //
 // ===----------------------------------------------------------------------===//
 
-/// Identifies the key that was pressed.
-///
-/// Covers standard terminal keys, function keys, navigation keys,
-/// and Kitty keyboard protocol functional keys.
 extension Terminal.Input.Key {
+    /// Identifies the key that was pressed.
+    ///
+    /// Covers standard terminal keys, function keys, navigation keys,
+    /// and Kitty keyboard protocol functional keys.
     public enum Code: Sendable, Equatable {
         /// A printable character key.
         case character(Unicode.Scalar)

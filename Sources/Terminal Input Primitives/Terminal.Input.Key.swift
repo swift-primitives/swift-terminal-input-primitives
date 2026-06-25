@@ -9,11 +9,11 @@
 //
 // ===----------------------------------------------------------------------===//
 
-/// A keyboard input event.
-///
-/// Represents a key press with optional modifiers, text content,
-/// and event kind (for Kitty keyboard protocol).
 extension Terminal.Input {
+    /// A keyboard input event.
+    ///
+    /// Represents a key press with optional modifiers, text content,
+    /// and event kind (for Kitty keyboard protocol).
     public struct Key: Sendable, Equatable {
         /// The key code identifying which key was pressed.
         public var code: Code
@@ -31,6 +31,7 @@ extension Terminal.Input {
         /// Only present when the Kitty keyboard protocol is active.
         public var kind: Kind?
 
+        /// Creates a key event from a code with optional modifiers, text, and kind.
         public init(
             code: Code,
             modifiers: Modifiers = [],

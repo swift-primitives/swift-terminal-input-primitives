@@ -25,7 +25,7 @@ extension Terminal.Input.Parser {
         modifierParam: UInt32,
         eventType: UInt32,
         hasEventType: Bool
-    ) throws(Terminal.Input.Parser.Error) -> Terminal.Input.Event {
+    ) throws(Self.Error) -> Terminal.Input.Event {
         let modifiers = modifiersFromCSI(modifierParam)
 
         let kind: Terminal.Input.Key.Kind? =
@@ -67,6 +67,7 @@ extension Terminal.Input.Parser {
         case 27: .escape
         case 127: .backspace
         case 57344...57503: .kitty(codepoint)
+
         default:
             if let scalar = Unicode.Scalar(codepoint) {
                 .character(scalar)

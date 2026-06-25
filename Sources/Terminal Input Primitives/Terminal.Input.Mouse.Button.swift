@@ -9,8 +9,8 @@
 //
 // ===----------------------------------------------------------------------===//
 
-/// A mouse button.
 extension Terminal.Input.Mouse {
+    /// A mouse button.
     public enum Button: Sendable, Equatable {
         /// Left mouse button (button 1).
         case left

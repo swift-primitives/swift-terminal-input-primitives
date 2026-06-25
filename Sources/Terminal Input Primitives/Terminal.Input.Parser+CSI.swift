@@ -13,7 +13,9 @@
 
 extension Terminal.Input.Parser {
 
-    /// Parses a CSI sequence. ESC [ has already been consumed.
+    /// Parses a CSI sequence.
+    ///
+    /// `ESC [` has already been consumed.
     ///
     /// CSI format: `ESC [ <params> <final>`
     /// - Parameters are `;`-separated decimal numbers
@@ -21,7 +23,7 @@ extension Terminal.Input.Parser {
     /// - Final byte (0x40–0x7E) determines the sequence type
     static func parseCSI<Storage>(
         _ input: inout Input.Buffer<Storage>
-    ) throws(Terminal.Input.Parser.Error) -> Terminal.Input.Event
+    ) throws(Self.Error) -> Terminal.Input.Event
     where
         Storage: RandomAccessCollection & Sendable,
         Storage.Element == Byte,
@@ -41,8 +43,7 @@ extension Terminal.Input.Parser {
         var p1: UInt32 = 0
         var p2: UInt32 = 0
         var paramCount: Int = 0
-        var eventType: UInt32 = 0
-        var hasEventType = false
+        var eventType: UInt32? = nil
 
         collectParameters(
             from: &input,
@@ -50,8 +51,7 @@ extension Terminal.Input.Parser {
             p1: &p1,
             p2: &p2,
             count: &paramCount,
-            eventType: &eventType,
-            hasEventType: &hasEventType
+            eventType: &eventType
         )
 
         // Read final byte
@@ -82,31 +82,40 @@ extension Terminal.Input.Parser {
         switch finalCode {
         case .A:
             return .key(Terminal.Input.Key(code: .up, modifiers: modifiersFromCSI(paramCount >= 2 ? p1 : 0)))
+
         case .B:
             return .key(Terminal.Input.Key(code: .down, modifiers: modifiersFromCSI(paramCount >= 2 ? p1 : 0)))
+
         case .C:
             return .key(Terminal.Input.Key(code: .right, modifiers: modifiersFromCSI(paramCount >= 2 ? p1 : 0)))
+
         case .D:
             return .key(Terminal.Input.Key(code: .left, modifiers: modifiersFromCSI(paramCount >= 2 ? p1 : 0)))
+
         case .H:
             return .key(Terminal.Input.Key(code: .home, modifiers: modifiersFromCSI(paramCount >= 2 ? p1 : 0)))
+
         case .F:
             return .key(Terminal.Input.Key(code: .end, modifiers: modifiersFromCSI(paramCount >= 2 ? p1 : 0)))
+
         case .Z:
             return .key(Terminal.Input.Key(code: .backtab))
+
         case .tilde:
             return try parseTildeKey(
                 keyNumber: p0,
                 modifierParam: paramCount >= 2 ? p1 : 0,
                 paramCount: paramCount
             )
+
         case .u:
             return try parseKittyKeyboard(
                 codepoint: p0,
                 modifierParam: paramCount >= 2 ? p1 : 0,
-                eventType: eventType,
-                hasEventType: hasEventType
+                eventType: eventType ?? 0,
+                hasEventType: eventType != nil
             )
+
         default:
             throw .unrecognizedSequence
         }
@@ -127,8 +136,7 @@ extension Terminal.Input.Parser {
         p1: inout UInt32,
         p2: inout UInt32,
         count: inout Int,
-        eventType: inout UInt32,
-        hasEventType: inout Bool
+        eventType: inout UInt32?
     )
     where
         Storage: RandomAccessCollection & Sendable,
@@ -168,7 +176,6 @@ extension Terminal.Input.Parser {
                     consumeUnchecked(&input)
                 }
                 eventType = current
-                hasEventType = true
                 current = 0
             } else {
                 break
@@ -224,7 +231,7 @@ extension Terminal.Input.Parser {
         keyNumber: UInt32,
         modifierParam: UInt32,
         paramCount: Int
-    ) throws(Terminal.Input.Parser.Error) -> Terminal.Input.Event {
+    ) throws(Self.Error) -> Terminal.Input.Event {
         guard paramCount >= 1 else { throw .unrecognizedSequence }
 
         let modifiers = modifiersFromCSI(modifierParam)
@@ -249,10 +256,13 @@ extension Terminal.Input.Parser {
         case 21: code = .function(10)
         case 23: code = .function(11)
         case 24: code = .function(12)
+
         case 200:
             return .paste("")
+
         case 201:
             throw .unrecognizedSequence
+
         default:
             throw .unrecognizedSequence
         }
@@ -265,12 +275,14 @@ extension Terminal.Input.Parser {
 
 extension Terminal.Input.Parser {
 
-    /// Parses an SS3 sequence. ESC O has already been consumed.
+    /// Parses an SS3 sequence.
+    ///
+    /// `ESC O` has already been consumed.
     ///
     /// SS3 sequences encode F1–F4 and Home/End in some terminal emulators.
     static func parseSS3<Storage>(
         _ input: inout Input.Buffer<Storage>
-    ) throws(Terminal.Input.Parser.Error) -> Terminal.Input.Event
+    ) throws(Self.Error) -> Terminal.Input.Event
     where
         Storage: RandomAccessCollection & Sendable,
         Storage.Element == Byte,

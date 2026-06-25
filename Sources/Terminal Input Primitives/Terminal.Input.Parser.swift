@@ -9,25 +9,26 @@
 //
 // ===----------------------------------------------------------------------===//
 
-/// VT terminal input parser.
-///
-/// Parses raw byte sequences from a terminal into structured ``Terminal.Input.Event``
-/// values. Supports standard VT/xterm sequences, SGR mouse encoding, and the
-/// Kitty keyboard protocol.
-///
-/// The parser is stateless—all state lives in the ``Input.Buffer`` cursor.
-/// Incomplete sequences restore the buffer position so the I/O layer can
-/// retry after receiving more data.
-///
-/// ## Example
-///
-/// ```swift
-/// var buffer = Input.Buffer<ContiguousArray<Byte>>([0x1B, 0x5B, 0x41])
-/// let event = try Terminal.Input.Parser.parse(&buffer)
-/// // event == .key(Key(code: .up))
-/// ```
 extension Terminal.Input {
+    /// VT terminal input parser.
+    ///
+    /// Parses raw byte sequences from a terminal into structured ``Terminal.Input.Event``
+    /// values. Supports standard VT/xterm sequences, SGR mouse encoding, and the
+    /// Kitty keyboard protocol.
+    ///
+    /// The parser is stateless—all state lives in the ``Input.Buffer`` cursor.
+    /// Incomplete sequences restore the buffer position so the I/O layer can
+    /// retry after receiving more data.
+    ///
+    /// ## Example
+    ///
+    /// ```swift
+    /// var buffer = Input.Buffer<ContiguousArray<Byte>>([0x1B, 0x5B, 0x41])
+    /// let event = try Terminal.Input.Parser.parse(&buffer)
+    /// // event == .key(Key(code: .up))
+    /// ```
     public struct Parser: Sendable {
+        /// Creates a stateless parser.
         public init() {}
     }
 }
@@ -52,7 +53,7 @@ extension Terminal.Input.Parser {
     ///   ``Error/unrecognizedSequence`` or ``Error/invalidUTF8`` for bad data.
     public static func parse<Storage>(
         _ input: inout Input.Buffer<Storage>
-    ) throws(Terminal.Input.Parser.Error) -> Terminal.Input.Event
+    ) throws(Self.Error) -> Terminal.Input.Event
     where
         Storage: RandomAccessCollection & Sendable,
         Storage.Element == Byte,
@@ -128,7 +129,7 @@ extension Terminal.Input.Parser {
     /// - Printable → Alt+character
     static func parseEscapeSequence<Storage>(
         _ input: inout Input.Buffer<Storage>
-    ) throws(Terminal.Input.Parser.Error) -> Terminal.Input.Event
+    ) throws(Self.Error) -> Terminal.Input.Event
     where
         Storage: RandomAccessCollection & Sendable,
         Storage.Element == Byte,
@@ -184,7 +185,7 @@ extension Terminal.Input.Parser {
     @inline(always)
     static func consume<Storage>(
         _ input: inout Input.Buffer<Storage>
-    ) throws(Terminal.Input.Parser.Error) -> Byte
+    ) throws(Self.Error) -> Byte
     where
         Storage: RandomAccessCollection & Sendable,
         Storage.Element == Byte,
@@ -197,7 +198,9 @@ extension Terminal.Input.Parser {
         }
     }
 
-    /// Consumes one byte without checking. Caller guarantees `!input.isEmpty`.
+    /// Consumes one byte without checking.
+    ///
+    /// The caller guarantees `!input.isEmpty`.
     @inline(always)
     @discardableResult
     static func consumeUnchecked<Storage>(
@@ -208,6 +211,12 @@ extension Terminal.Input.Parser {
         Storage.Element == Byte,
         Storage.Index: Sendable & Hashable
     {
-        try! input.advance()
+        do {
+            return try input.advance()
+        } catch {
+            preconditionFailure(
+                "consumeUnchecked requires a non-empty buffer; the caller violated the !input.isEmpty precondition"
+            )
+        }
     }
 }

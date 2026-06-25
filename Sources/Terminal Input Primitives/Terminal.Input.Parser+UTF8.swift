@@ -23,7 +23,7 @@ extension Terminal.Input.Parser {
     /// - Throws: ``Error/incompleteSequence`` if continuation bytes are missing.
     static func parseUTF8<Storage>(
         _ input: inout Input.Buffer<Storage>
-    ) throws(Terminal.Input.Parser.Error) -> Terminal.Input.Event
+    ) throws(Self.Error) -> Terminal.Input.Event
     where
         Storage: RandomAccessCollection & Sendable,
         Storage.Element == Byte,
@@ -42,12 +42,15 @@ extension Terminal.Input.Parser {
         case 0xC0...0xDF:
             length = 2
             initial = UInt32(first & 0x1F)
+
         case 0xE0...0xEF:
             length = 3
             initial = UInt32(first & 0x0F)
+
         case 0xF0...0xF7:
             length = 4
             initial = UInt32(first & 0x07)
+
         default:
             throw .invalidUTF8
         }

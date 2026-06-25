@@ -9,11 +9,11 @@
 //
 // ===----------------------------------------------------------------------===//
 
-/// A mouse input event.
-///
-/// Represents a mouse action with position and modifier information.
-/// Coordinates are 1-based, matching the SGR mouse encoding.
 extension Terminal.Input {
+    /// A mouse input event.
+    ///
+    /// Represents a mouse action with position and modifier information.
+    /// Coordinates are 1-based, matching the SGR mouse encoding.
     public struct Mouse: Sendable, Equatable {
         /// The kind of mouse event (press, release, move, drag, scroll).
         public var kind: Kind
@@ -27,6 +27,7 @@ extension Terminal.Input {
         /// Active modifier keys during the mouse event.
         public var modifiers: Key.Modifiers
 
+        /// Creates a mouse event from a kind, 1-based column and row, and modifiers.
         public init(
             kind: Kind,
             column: UInt16,

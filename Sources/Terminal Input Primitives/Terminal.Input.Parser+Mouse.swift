@@ -31,7 +31,7 @@ extension Terminal.Input.Parser {
         row: UInt32,
         paramCount: Int,
         finalByte: Byte
-    ) throws(Terminal.Input.Parser.Error) -> Terminal.Input.Event {
+    ) throws(Self.Error) -> Terminal.Input.Event {
         guard paramCount >= 3 else { throw .unrecognizedSequence }
 
         // Compare at the Byte layer using the named ASCII constant — this
@@ -53,24 +53,34 @@ extension Terminal.Input.Parser {
         switch buttonValue {
         case 0:
             kind = isRelease ? .release(.left) : (isMotion ? .drag(.left) : .press(.left))
+
         case 1:
             kind = isRelease ? .release(.middle) : (isMotion ? .drag(.middle) : .press(.middle))
+
         case 2:
             kind = isRelease ? .release(.right) : (isMotion ? .drag(.right) : .press(.right))
+
         case 3:
             kind = .move
+
         case 64:
             kind = .scrollUp
+
         case 65:
             kind = .scrollDown
+
         case 66:
             kind = .scrollLeft
+
         case 67:
             kind = .scrollRight
+
         case 128:
             kind = isRelease ? .release(.backward) : (isMotion ? .drag(.backward) : .press(.backward))
+
         case 129:
             kind = isRelease ? .release(.forward) : (isMotion ? .drag(.forward) : .press(.forward))
+
         default:
             throw .unrecognizedSequence
         }

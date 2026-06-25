@@ -9,8 +9,8 @@
 //
 // ===----------------------------------------------------------------------===//
 
-/// Errors produced by the terminal input parser.
 extension Terminal.Input.Parser {
+    /// Errors produced by the terminal input parser.
     public enum Error: Swift.Error, Sendable, Equatable {
         /// The input buffer is empty—no bytes to parse.
         case emptyInput
